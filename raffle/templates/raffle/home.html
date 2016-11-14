@@ -1,0 +1,96 @@
+{% extends 'raffle/base.html' %}
+
+
+
+{% block content %}
+<div id="randomize">
+    <div class="content container" style="text-align: center">
+        <h1 class="raffle-header">Tenis Urban Style!</h1>
+        <div id="machines" class="row"></div>
+    </div>
+
+    <div>
+        <div class="btn-group btn-group-justified btn-group-randomize" role="group">
+            <div id="newButton" type="button" class="btn btn-default btn-lg">Nuevo</div>
+            <div id="ranomizeButton" type="button" class="btn btn-danger btn-lg">Sorteo</div>
+            <div id="winnerButton" type="button" class="btn btn-success btn-lg">Ganador</div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function () {
+        var pa = 50;
+
+        var numbers = [];
+        var audioElement = document.createElement('audio');
+        audioElement.setAttribute('src', './sms-alert-1-daniel_simon.mp3');
+
+        for (var i = 1; i <= 50; i++) {
+            numbers.push(i);
+        }
+
+        for (var i = 1; i <= 50; i++) {
+            var m = "<div class='col-xs-3 slot'><div id='p_label'><b>Participante " + i + "</b> <div id='" + i + "' class='randomizeMachine'></div></div></div>";
+            $("#machines").append(m)
+        }
+
+        function onComplete(active) {
+            //audioElement.play();
+            var id = parseInt(this.element[0].id);
+            var next_id = (id + 1);
+            var $currem = $("#" + id);
+            var $nelem = $("#" + next_id);
+
+            if ($nelem.length == 1) {
+                console.log(active);
+                var $obj = ($currem.children().find("[index=" + this.active + "]"));
+                if (typeof $obj !== 'undefined') {
+                    var val = $obj.attr('number');
+                    var found = numbers.indexOf(parseInt(val));
+                    if (found > -1) {
+                        numbers.splice(found, 1);
+                    }
+                }
+                console.log(numbers);
+
+                for (var i = 1; i < numbers.length; i++) {
+                    url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                    $("#" + next_id).append(url)
+                }
+
+                var machine = $nelem.slotMachine({
+                    active: 1,
+                    delay: 500,
+                    direction: 'down'
+                });
+
+                machine.shuffle(5, onComplete);
+
+            }
+        }
+
+        $("#ranomizeButton").click(function () {
+
+            for (var i = 1; i <= 50; i++) {
+                var url = "<div index='" + (i) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                $("#1").append(url)
+            }
+
+            var machine1 = $("#1").slotMachine({
+                active: 1,
+                delay: 500,
+                direction: 'down'
+            });
+
+            machine1.shuffle(5, onComplete);
+        })
+    });
+</script>
+{% endblock %}
+
