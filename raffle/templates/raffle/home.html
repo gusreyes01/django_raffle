@@ -5,13 +5,17 @@
 {% block content %}
 <div id="randomize">
     <div class="content container" style="text-align: center">
-        <h1 class="raffle-header">Tenis Urban Style!</h1>
+
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
         <div id="machines" class="row"></div>
     </div>
 
     <div>
         <div class="btn-group btn-group-justified btn-group-randomize" role="group">
-            <div id="newButton" type="button" class="btn btn-default btn-lg">Nuevo</div>
+            <a href="/raffle/create"><div id="newButton" type="button" class="btn btn-default btn-lg" >Nuevo</div></a>
             <div id="ranomizeButton" type="button" class="btn btn-danger btn-lg">Sorteo</div>
             <div id="winnerButton" type="button" class="btn btn-success btn-lg">Ganador</div>
         </div>

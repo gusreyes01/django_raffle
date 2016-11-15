@@ -212,6 +212,14 @@ div.col-xs-3 {
 
 }
 
+.raffle-header-x5 {
+    padding-top: 70px;
+    font-size: 40px;
+    font-family: 'BlowBrush';
+    color: #aa8800;
+
+}
+
 .randomizeMachine {
     /*width: 100px;*/
     height: 70px;

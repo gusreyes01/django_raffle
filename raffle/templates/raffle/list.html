@@ -1,0 +1,37 @@
+{% extends 'raffle/base.html' %}
+
+{% block content %}
+    <div class="container">
+
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        {% block subheader %}
+            <h4 class="raffle-header"> Sorteos Pasados</h4>
+            <br>
+        {% endblock %}
+
+        <div style="padding-top: 50px">
+            {% if raffles %}
+                <a href="/raffle/create"><button class="btn btn-default" value="Crear">Crear</button></a>
+            <table class="table">
+                <th># Rifa</th>
+                <th>Premio</th>
+                <th>Ganador</th>
+            {% for r in raffles %}
+                <tr>
+                    <td><a href="/raffle/{{r.pk }}">Rifa {{ r.pk }}</a></td>
+                    <td>{{ r.prize|default_if_none:"Por Definir" }}</td>
+                    <td>{{ r.winner|default_if_none:"Pendiente" }}</td>
+                </tr>
+
+            {% endfor %}
+            </table>
+            {% else %}
+                <h6 class="raffle-header-x5"> > Aún no hay ningún sorteo. ¡Espéralos muy pronto! <</h6>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

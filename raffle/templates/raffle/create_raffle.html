@@ -1,1 +1,27 @@
 {% extends 'raffle/base.html' %}
+
+{% block content %}
+    <div class="container">
+
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        {% block subheader %}
+            <h4 class="raffle-header"> Nuevo Sorteo</h4>
+            <br>
+        {% endblock %}
+
+        <div style="padding-top: 50px">
+            <form method="POST" action="" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form }}
+
+                <br>
+                <button type="submit" class="btn btn-success" value="Send">Enviar</button>
+
+            </form>
+        </div>
+    </div>
+{% endblock %}
+

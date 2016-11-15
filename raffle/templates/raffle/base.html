@@ -7,7 +7,7 @@
 
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <title>jQuery Slot Machine</title>
+    <title>Tenis Urban Style</title>
     <link href="https://fonts.googleapis.com/css?family=Pragati+Narrow|Shrikhand" rel="stylesheet">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.0">
@@ -25,10 +25,28 @@
 
 
     {% endblock %}
+
+
 </head>
 
 <body>
 {% block content %}
+
+
+        {% for message in messages %}
+            <li class="{{ message.tags }}">
+                {% if 'safe' in message.tags %}{{ message|safe }}{% else %}{{ message }}{% endif %}
+            </li>
+        {% endfor %}
+        {% block header %}
+
+            <h1 class="raffle-header">Tenis Urban Style!</h1>
+
+        {% endblock %}
+
+        {% block subheader %}
+        {% endblock %}
+
 {% endblock %}
 </body>
 

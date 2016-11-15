@@ -15,10 +15,12 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+
 from raffle import views as raffle_views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', raffle_views.home),
+    url(r'^raffle/(?P<pk>\d+)/$', raffle_views.home),
     url(r'^raffle/create/$', raffle_views.create),
+    url(r'^raffles/$', raffle_views.list, name='list'),
 ]
