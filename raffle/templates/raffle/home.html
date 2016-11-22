@@ -3,98 +3,204 @@
 
 
 {% block content %}
-<div id="randomize">
-    <div class="content container" style="text-align: center">
+    <div id="randomize">
+        <div class="content container" style="text-align: center">
 
-        {% block header %}
-            {{ block.super }}
-        {% endblock %}
+            {% block header %}
+                {{ block.super }}
+            {% endblock %}
 
-        <div id="machines" class="row"></div>
-    </div>
+            <div id="machines" class="row"></div>
+        </div>
 
-    <div>
-        <div class="btn-group btn-group-justified btn-group-randomize" role="group">
-            <a href="/raffle/create"><div id="newButton" type="button" class="btn btn-default btn-lg" >Nuevo</div></a>
-            <div id="ranomizeButton" type="button" class="btn btn-danger btn-lg">Sorteo</div>
-            <div id="winnerButton" type="button" class="btn btn-success btn-lg">Ganador</div>
+        <div>
+            <div class="btn-group-justified btn-group-randomize" role="group">
+                <a href="/rifa/crear">
+                    <div id="newButton" type="button" class="btn btn-default btn-lg">Nuevo</div>
+                </a>
+                {% if not raffle.results %}
+                    <div id="ranomizeButton" type="button" class="btn btn-danger btn-lg">Sorteo</div>
+                    <div id="saveButton" type="button" class="btn btn-warning btn-lg">Guardar Resultados</div>
+                {% endif %}
+
+                {% if not raffle.winner %}
+                    <a href="/rifa/ganador/{{ raffle.pk }}">
+                        <div id="winnerButton" type="button" class="btn btn-success btn-lg">Ganador</div>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
-</div>
-</div>
+    </div>
 
 {% endblock %}
 
 {% block scripts %}
 
-<script>
-    $(document).ready(function () {
-        var pa = 50;
+    <script>
+        $(document).ready(function () {
+            var round_count = 0;
 
-        var numbers = [];
-        var audioElement = document.createElement('audio');
-        audioElement.setAttribute('src', './sms-alert-1-daniel_simon.mp3');
+            function isEmpty(obj) {
+                return Object.keys(obj).length === 0;
+            }
 
-        for (var i = 1; i <= 50; i++) {
-            numbers.push(i);
-        }
-
-        for (var i = 1; i <= 50; i++) {
-            var m = "<div class='col-xs-3 slot'><div id='p_label'><b>Participante " + i + "</b> <div id='" + i + "' class='randomizeMachine'></div></div></div>";
-            $("#machines").append(m)
-        }
-
-        function onComplete(active) {
-            //audioElement.play();
-            var id = parseInt(this.element[0].id);
-            var next_id = (id + 1);
-            var $currem = $("#" + id);
-            var $nelem = $("#" + next_id);
-
-            if ($nelem.length == 1) {
-                console.log(active);
-                var $obj = ($currem.children().find("[index=" + this.active + "]"));
-                if (typeof $obj !== 'undefined') {
-                    var val = $obj.attr('number');
-                    var found = numbers.indexOf(parseInt(val));
-                    if (found > -1) {
-                        numbers.splice(found, 1);
-                    }
+            function shuffle(a) {
+                for (let i = a.length; i; i--) {
+                    let j = Math.floor(Math.random() * i);
+                    [a[i - 1], a[j]] = [a[j], a[i - 1]];
                 }
-                console.log(numbers);
+            }
+
+
+            var audioElement = document.createElement('audio');
+            audioElement.setAttribute('src', './sms-alert-1-daniel_simon.mp3');
+            var participants = [];
+            var pa = 0;
+
+            {% for u in raffle.users.all %}
+                participants.push({'id': "{{u.pk}}", 'name': "{{u.first_name}}", 'number': pa + 1});
+                pa++;
+            {% endfor %}
+
+
+
+            var numbers = [];
+
+
+            // Guardamos en un arreglo los resultados si estos existen
+            {% if not raffle.results %}
+                var results = [];
+            {% else %}
+                var results = {{ raffle.results }};
+            {% endif %}
+
+            for (var i = 1; i <= pa; i++) {
+                numbers.push(i);
+            }
+
+            shuffle(numbers);
+
+
+
+            // creamos un spinner por participante
+            for (var key in participants) {
+                var m = "<div class='col-xs-3 slot'><div id='p_label'><b>" + participants[key].name + "</b> <div id='" + participants[key].number + "' class='randomizeMachine'></div></div></div>";
+                $("#machines").append(m)
+            }
+
+            // pintamos resultados si existen
+            if (!(isEmpty(results))) {
+                for (var key in participants) {
+                    var the_id = participants[key].number;
+                    url = "<div index='" + (key - 1) + "' number='" + results[key] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + results[key] + "' /></div>";
+                    $("#" + the_id).append(url)
+
+                }
+            }
+
+            // se ejecuta de forma recursiva cada que un sorteo termina
+            function onComplete(active) {
+                //audioElement.play();
+                var id = parseInt(this.element[0].id);
+                var next_id = (id + 1);
+                var nnext_id = (id + 2);
+
+                var $currem = $("#" + id);
+                var $nelem = $("#" + next_id);
+                var $nnelem = $("#" + nnext_id);
+
+                if ($nelem.length == 1 && round_count < pa - 1) {
+                    // obtenemos el raffle "activo" (seleccionado) y buscamos el number que le dimos
+                    if(id == 1) {
+                        var active = this.active - 1;
+                    }else{
+                        var active = this.active;
+                    }
+                    var $obj = ($currem.children().find("[index=" + parseInt(active) + "]"));
+                    if (typeof $obj !== 'undefined') {
+                        var val = $obj.attr('number');
+                        var found = numbers.indexOf(parseInt(val));
+                        if (found > -1) {
+                            numbers.splice(found, 1);
+                            results.push(parseInt(val));
+                        }
+
+                        console.log('active');
+                        console.log(this.active);
+
+                        console.log('found');
+                        console.log(found);
+
+                        console.log("numbers");
+                        console.log(numbers);
+
+                        console.log("results");
+                        console.log(results);
+                    }
+
+                    // colocamos todos los numeros restantes en nuestra máquina
+                    for (var i = 1; i < numbers.length; i++) {
+                        url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                        $("#" + next_id).append(url)
+                    }
+
+                    if ($nnelem.length == 1) {
+                        var machine = $nelem.slotMachine({
+                            active: 1,
+                            delay: 500,
+                            direction: 'down'
+                        });
+
+                        machine.shuffle(5, onComplete);
+                    } else {
+                        //last one just assign left number
+                        url = "<div index='" + (i - 1) + "' number='" + numbers[0] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[0] + "' /></div>";
+                        results.push(numbers[0]);
+                        $nelem.append(url)
+                    }
+                    round_count++;
+
+                }
+            }
+
+
+            $("#ranomizeButton").click(function () {
+
 
                 for (var i = 1; i < numbers.length; i++) {
-                    url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
-                    $("#" + next_id).append(url)
+                    url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                    $("#1").append(url)
                 }
 
-                var machine = $nelem.slotMachine({
+                var machine1 = $('#1').slotMachine({
                     active: 1,
                     delay: 500,
                     direction: 'down'
                 });
 
-                machine.shuffle(5, onComplete);
 
-            }
-        }
-
-        $("#ranomizeButton").click(function () {
-
-            for (var i = 1; i <= 50; i++) {
-                var url = "<div index='" + (i) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
-                $("#1").append(url)
-            }
-
-            var machine1 = $("#1").slotMachine({
-                active: 1,
-                delay: 500,
-                direction: 'down'
+                machine1.shuffle(5, onComplete);
             });
 
-            machine1.shuffle(5, onComplete);
-        })
-    });
-</script>
+            function success() {
+                alert('Guardado exitoso');
+            }
+
+            $("#saveButton").click(function () {
+                var myJsonString = JSON.stringify(results);
+                $.ajax({
+                    type: "POST",
+                    url: "/api/rifa/resultados/{{ raffle.pk }}/",
+                    data: myJsonString,
+                    success: success,
+                    dataType: 'json',
+                });
+
+
+            });
+
+        });
+    </script>
 {% endblock %}
 

@@ -1,0 +1,99 @@
+{% extends 'raffle/base.html' %}
+
+
+
+{% block content %}
+<div id="randomize">
+    <div class="content container" style="text-align: center">
+
+        {% block header %}
+            {{ block.super }}
+        {% endblock %}
+
+        <div id="machines" class="row"></div>
+
+        <div>
+        <div class="btn-group btn-group-justified btn-group-randomize" role="group">
+            <a href="/rifa/crear"><div id="newButton" type="button" class="btn btn-default btn-lg" >Nuevo</div></a>
+            <div id="ranomizeButton" type="button" class="btn btn-success btn-lg">Elegir Ganador</div>
+        </div>
+    </div>
+
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function () {
+        var participants = [];
+        var pa = 0;
+
+        {% for u in raffle.users.all %}
+            participants.push({'id': "{{u.pk}}", 'name':"{{u.first_name}}", 'number':pa+1});
+            pa++;
+        {% endfor %}
+
+
+
+        var numbers = [];
+        var audioElement = document.createElement('audio');
+        audioElement.setAttribute('src', './sms-alert-1-daniel_simon.mp3');
+
+        for (var i = 1; i <= pa; i++) {
+            numbers.push(i);
+        }
+
+
+        function onComplete(active) {
+            //audioElement.play();
+            var id = parseInt(this.element[0].id);
+            var next_id = (id + 1);
+            var $currem = $("#" + id);
+            var $nelem = $("#" + next_id);
+
+            if ($nelem.length == 1) {
+                console.log(active);
+                var $obj = ($currem.children().find("[index=" + this.active + "]"));
+                if (typeof $obj !== 'undefined') {
+                    var val = $obj.attr('number');
+                    var found = numbers.indexOf(parseInt(val));
+                    if (found > -1) {
+                        numbers.splice(found, 1);
+                    }
+                }
+                console.log(numbers);
+
+                var machine = $nelem.slotMachine({
+                    active: 1,
+                    delay: 500,
+                    direction: 'down'
+                });
+
+                machine.shuffle(5, onComplete);
+
+            }
+        }
+
+        $("#ranomizeButton").click(function () {
+
+            for (var i = 1; i <= pa; i++) {
+                var url = "<div index='" + (i) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                $("#1").append(url)
+            }
+
+            var machine1 = $("#1").slotMachine({
+                active: 1,
+                delay: 500,
+                direction: 'down'
+            });
+
+            machine1.shuffle(5, onComplete);
+        })
+    });
+</script>
+{% endblock %}
+
