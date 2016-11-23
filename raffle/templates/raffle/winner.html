@@ -1,7 +1,50 @@
 {% extends 'raffle/base.html' %}
+{% load static %}
 
+{% block extra_styles %}
 
+    	<style type="text/css">
 
+		form {
+			margin-bottom: 30px ;
+			}
+
+		ol#raffle {
+			list-style-type: none ;
+			float: left ;
+			font-size: 30px ;
+			margin: 0px 0px 0px 0px ;
+			padding: 0px 0px 0px 0px ;
+			}
+
+		ol#raffle li {
+			background-color: #FAFAFA ;
+			border: 2px solid #454545 ;
+			float: left ;
+			height: 60px ;
+			line-height: 60px ;
+			margin: 0px 10px 10px 0px ;
+			overflow: hidden ;
+			padding: 0px 0px 0px 0px ;
+			text-align: center ;
+			width: 60px ;
+			}
+
+		ol#raffle li.on {
+			background-color: gold ;
+			font-size: 45px ;
+			font-weight: bold ;
+			}
+
+        .sa-custom {
+            width: 150px;
+            height: 150px;
+        }
+	</style>
+
+    <link rel="stylesheet" href="{% static 'vendor/sweetalert-master/dist/sweetalert.css' %}" type="text/css" media="screen"/>
+
+{% endblock %}
 {% block content %}
 <div id="randomize">
     <div class="content container" style="text-align: center">
@@ -10,14 +53,32 @@
             {{ block.super }}
         {% endblock %}
 
-        <div id="machines" class="row"></div>
 
-        <div>
-        <div class="btn-group btn-group-justified btn-group-randomize" role="group">
-            <a href="/rifa/crear"><div id="newButton" type="button" class="btn btn-default btn-lg" >Nuevo</div></a>
-            <div id="ranomizeButton" type="button" class="btn btn-success btn-lg">Elegir Ganador</div>
-        </div>
-    </div>
+
+    {% if raffle.winner %}
+        <h4 class="winner-label">Gracias por participar. El ganador de esta rifa fue el #{{ raffle.winner }}</h4><br>
+    {% else %}
+
+	<ol id="raffle"></ol>
+
+	<br clear="all" />
+	<br />
+    {% endif %}
+
+    {% if request.user.is_staff %}
+        <form>
+            <a href="/rifa/{{ raffle.pk }}" class="step-back">< Volver</a>
+            <a href="/rifa/crear">
+                <div id="newButton" type="button" class="btn btn-default btn-lg">Nuevo</div>
+            </a>
+            {% if not raffle.winner %}
+            <button type="submit" id="ranomizeButton" type="button" class="btn btn-success btn-lg">Elegir
+                Ganador
+            </button>
+            <div id="saveWinner" type="button" class="btn btn-warning btn-lg">Guardar Ganador</div>
+            {% endif %}
+        </form>
+    {% endif %}
 
     </div>
 </div>
@@ -50,50 +111,53 @@
 
         function onComplete(active) {
             //audioElement.play();
-            var id = parseInt(this.element[0].id);
-            var next_id = (id + 1);
-            var $currem = $("#" + id);
-            var $nelem = $("#" + next_id);
-
-            if ($nelem.length == 1) {
-                console.log(active);
-                var $obj = ($currem.children().find("[index=" + this.active + "]"));
-                if (typeof $obj !== 'undefined') {
-                    var val = $obj.attr('number');
-                    var found = numbers.indexOf(parseInt(val));
-                    if (found > -1) {
-                        numbers.splice(found, 1);
-                    }
-                }
-                console.log(numbers);
-
-                var machine = $nelem.slotMachine({
-                    active: 1,
-                    delay: 500,
-                    direction: 'down'
-                });
-
-                machine.shuffle(5, onComplete);
-
-            }
         }
 
-        $("#ranomizeButton").click(function () {
 
-            for (var i = 1; i <= pa; i++) {
-                var url = "<div index='" + (i) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
-                $("#1").append(url)
-            }
-
-            var machine1 = $("#1").slotMachine({
-                active: 1,
-                delay: 500,
-                direction: 'down'
-            });
-
-            machine1.shuffle(5, onComplete);
-        })
     });
 </script>
 {% endblock %}
+{% block extra_scripts %}
+    <script>
+        var participants = {{ raffle.users.count }};
+        {% if not raffle.winner %}
+            var winner;
+        {% else %}
+            var winner = {{ raffle.winner }};
+            for (var i = 1; i < participants.length; i++){
+                if(i == winner){
+                $('#raffle').append("<li class=''><div>"+i+"</div></li>");
+                    }else{
+                   $('#raffle').append("<li class='on'><div>"+i+"</div></li>");
+                }
+            }
+        {% endif %}
+
+
+        function success() {
+            alert('Guardado exitoso');
+        }
+
+        $('#saveWinner').on('click', function () {
+
+            var myJsonString = JSON.stringify(winner);
+            console.log(myJsonString);
+            $.ajax({
+                type: "POST",
+                url: "/api/rifa/ganador/{{ raffle.pk }}/",
+                data: myJsonString,
+                success: success,
+                dataType: 'json',
+            });
+
+
+        });
+
+    </script>
+    <script type="text/javascript" src="{% static 'vendor/sweetalert-master/dist/sweetalert.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery-raffle.js' %}"></script>
+
+{% endblock %}
+
+
 

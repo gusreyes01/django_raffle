@@ -13,8 +13,12 @@
         {% endblock %}
 
         <div style="padding-top: 50px">
+            {% if request.user.is_staff %}
+            <a href="/rifa/crear"><button class="btn btn-default" value="Crear">Crear</button></a>
+            {% endif %}
+
             {% if raffles %}
-                <a href="/rifa/crear"><button class="btn btn-default" value="Crear">Crear</button></a>
+
             <table class="table">
                 <th># Rifa</th>
                 <th>Premio</th>
@@ -23,9 +27,9 @@
             {% for r in raffles %}
                 <tr>
                     <td><a href="/rifa/{{r.pk }}">Rifa {{ r.pk }}</a></td>
-                    <td>{{ r.prize|default_if_none:"Por Definir" }}</td>
-                    <td>{{ r.results }}</td>
-                    <td>{{ r.winner.first_name|default_if_none:"Pendiente" }}</td>
+                    <td>{{ r.prize|default_if_none:"" }}</td>
+                    <td>{{ r.results|default_if_none:"" }}</td>
+                    <td>{{ r.winner|default_if_none:"Pendiente" }}</td>
                 </tr>
 
             {% endfor %}

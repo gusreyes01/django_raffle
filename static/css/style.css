@@ -395,20 +395,6 @@ footer{
 	text-align: left;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 .machineResult{
 	color:#fff;
 	text-align:center;
@@ -446,4 +432,16 @@ footer{
 
 .slot6 {
 	background-image: url("../img/slot6.png");
+}
+
+.vertical-text {
+	transform: rotate(90deg);
+	transform-origin: left top 0;
+    float: left;
+    padding-top: 120px;
+}
+
+.winner-label {
+    font-family: 'Archivo Black', sans-serif;
+    padding-bottom: 30px;
 }

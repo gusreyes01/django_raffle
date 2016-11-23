@@ -22,9 +22,10 @@
             integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="{% static 'dist/jquery.slotmachine.js' %}"></script>
-
+    <link href="https://fonts.googleapis.com/css?family=Archivo+Black" rel="stylesheet">
 
     {% endblock %}
+    {% block extra_styles %}{% endblock %}
 
 
 </head>
@@ -42,6 +43,8 @@
 
             <h1 class="raffle-header">The Random Picker!</h1>
 
+            <h1 class="raffle-header vertical-text">Tenis Urban Style </h1>
+
         {% endblock %}
 
         {% block subheader %}
@@ -52,6 +55,7 @@
 
 {% block scripts %}
 {% endblock %}
+{% block extra_scripts %}{% endblock %}
 
 
 </html>

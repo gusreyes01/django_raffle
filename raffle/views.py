@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from raffle.forms import UploadFileForm, RaffleForm
 from raffle.models import Raffle
 from raffle.uploads import handle_uploaded_file
+from excel_utilities import WriteToExcel
 
 
 def home(request, pk):
@@ -28,10 +29,19 @@ def results(request, pk):
     if request.is_ajax():
         raffle = Raffle.objects.get(pk=pk)
         res = json.loads(request.body)
-        print(res)
         raffle.results = res
         raffle.save()
-        return HttpResponse('success')
+        return HttpResponse('success', status=200)
+
+
+@csrf_exempt
+def save_winner(request, pk):
+    if request.is_ajax():
+        raffle = Raffle.objects.get(pk=pk)
+        res = json.loads(request.body)
+        raffle.winner = res
+        raffle.save()
+        return HttpResponse('success', status=200)
 
 
 def winner(request, pk):
@@ -51,3 +61,18 @@ def create(request):
         return redirect(reverse('list'))
 
     return render(request, 'raffle/create_raffle.html', locals())
+
+
+def generate_excel(request, pk):
+    if request.method == 'POST':
+
+        raffle = Raffle.objects.get(pk=pk)
+
+        response = HttpResponse(content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment; filename=Resultados.xlsx'
+        xlsx_data = WriteToExcel(raffle, request)
+        response.write(xlsx_data)
+        return response
+
+    else:
+        return HttpResponse('[]', status=200)

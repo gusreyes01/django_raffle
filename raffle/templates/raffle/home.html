@@ -13,8 +13,10 @@
             <div id="machines" class="row"></div>
         </div>
 
-        <div>
+        {% if request.user.is_staff %}
             <div class="btn-group-justified btn-group-randomize" role="group">
+                <a href="/rifas/" class="step-back">< Volver</a>
+
                 <a href="/rifa/crear">
                     <div id="newButton" type="button" class="btn btn-default btn-lg">Nuevo</div>
                 </a>
@@ -28,8 +30,15 @@
                         <div id="winnerButton" type="button" class="btn btn-success btn-lg">Ganador</div>
                     </a>
                 {% endif %}
+
+
+                <form action="{% url 'generate_excel' raffle.pk %}" id="reportForm" method="POST">
+                    {% csrf_token %}
+                    <button id="exportExcel" type="submit" class="btn btn-danger btn-lg">Exportar Excel</button>
+                </form>
+
             </div>
-        </div>
+    {% endif %}
     </div>
     </div>
 
@@ -196,7 +205,6 @@
                     success: success,
                     dataType: 'json',
                 });
-
 
             });
 

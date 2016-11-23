@@ -25,5 +25,7 @@ urlpatterns = [
     url(r'^rifa/crear/$', raffle_views.create),
     url(r'^rifas/$', raffle_views.list, name='list'),
     url(r'^api/rifa/resultados/(?P<pk>\d+)/$', raffle_views.results, name='results'),
+    url(r'^api/rifa/ganador/(?P<pk>\d+)/$', raffle_views.save_winner, name='save_winner'),
+    url(r'^generate_excel/(?P<pk>\d+)/$', raffle_views.generate_excel, name='generate_excel'),
 
 ]

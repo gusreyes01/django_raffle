@@ -1,2 +1,3 @@
 django
 xlrd==1.0.0
+xlsxwriter
