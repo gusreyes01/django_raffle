@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 # Create your views here.
-from django.urls import reverse
+from django.core.urlresolvers import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from raffle.forms import UploadFileForm, RaffleForm
