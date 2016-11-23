@@ -23,6 +23,8 @@
             crossorigin="anonymous"></script>
     <script type="text/javascript" src="{% static 'dist/jquery.slotmachine.js' %}"></script>
     <link href="https://fonts.googleapis.com/css?family=Archivo+Black" rel="stylesheet">
+    <script type="text/javascript" src="{% static 'vendor/sweetalert-master/dist/sweetalert.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'vendor/sweetalert-master/dist/sweetalert.css' %}" type="text/css" media="screen"/>
 
     {% endblock %}
     {% block extra_styles %}{% endblock %}
@@ -45,12 +47,25 @@
 
             <h1 class="raffle-header vertical-text">Tenis Urban Style </h1>
 
+            {% if banner %}
+                <img src="/media/{{ banner.banner_1 }}" alt="" class="banner banner-1"/>
+                <img src="/media/{{ banner.banner_2 }}" alt="" class="banner banner-2"/>
+                <img src="/media/{{ banner.banner_3 }}" alt="" class="banner banner-3"/>
+                <img src="/media/{{ banner.banner_4 }}" alt="" class="banner banner-4"/>
+            {% else %}
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=250%C3%97250&w=250&h=250" alt="" class="banner banner-1"/>
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=250%C3%97250&w=250&h=250" alt="" class="banner banner-2"/>
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=250%C3%97250&w=250&h=250" alt="" class="banner banner-3"/>
+                <img src="https://placeholdit.imgix.net/~text?txtsize=33&txt=250%C3%97250&w=250&h=250" alt="" class="banner banner-4"/>
+            {% endif %}
         {% endblock %}
 
         {% block subheader %}
         {% endblock %}
 
 {% endblock %}
+
+
 </body>
 
 {% block scripts %}

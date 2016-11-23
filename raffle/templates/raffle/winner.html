@@ -42,7 +42,6 @@
         }
 	</style>
 
-    <link rel="stylesheet" href="{% static 'vendor/sweetalert-master/dist/sweetalert.css' %}" type="text/css" media="screen"/>
 
 {% endblock %}
 {% block content %}
@@ -135,7 +134,7 @@
 
 
         function success() {
-            alert('Guardado exitoso');
+            swal('Guardado exitoso');
         }
 
         $('#saveWinner').on('click', function () {
@@ -154,7 +153,6 @@
         });
 
     </script>
-    <script type="text/javascript" src="{% static 'vendor/sweetalert-master/dist/sweetalert.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-raffle.js' %}"></script>
 
 {% endblock %}

@@ -9,17 +9,19 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from raffle.forms import UploadFileForm, RaffleForm
-from raffle.models import Raffle
+from raffle.models import Raffle, Banner
 from raffle.uploads import handle_uploaded_file
 from excel_utilities import WriteToExcel
 
 
 def home(request, pk):
+    banner = Banner.objects.all().latest('pk')
     raffle = Raffle.objects.get(pk=pk)
     return render(request, 'raffle/home.html', locals())
 
 
 def list(request):
+    banner = Banner.objects.all().latest('pk')
     raffles = Raffle.objects.all()
     return render(request, 'raffle/list.html', locals())
 
@@ -31,7 +33,9 @@ def results(request, pk):
         res = json.loads(request.body)
         raffle.results = res
         raffle.save()
-        return HttpResponse('success', status=200)
+
+        payload = {'success': True}
+        return HttpResponse(json.dumps(payload), content_type='application/json')
 
 
 @csrf_exempt
@@ -41,15 +45,20 @@ def save_winner(request, pk):
         res = json.loads(request.body)
         raffle.winner = res
         raffle.save()
-        return HttpResponse('success', status=200)
+
+        payload = {'success': True}
+        return HttpResponse(json.dumps(payload), content_type='application/json')
+
 
 
 def winner(request, pk):
+    banner = Banner.objects.all().latest('pk')
     raffle = Raffle.objects.get(pk=pk)
     return render(request, 'raffle/winner.html', locals())
 
 
 def create(request):
+    banner = Banner.objects.all().latest('pk')
     form = UploadFileForm()
     raffle_form = RaffleForm()
 
@@ -76,3 +85,4 @@ def generate_excel(request, pk):
 
     else:
         return HttpResponse('[]', status=200)
+

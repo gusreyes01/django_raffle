@@ -63,12 +63,12 @@
 
 
             var audioElement = document.createElement('audio');
-            audioElement.setAttribute('src', './sms-alert-1-daniel_simon.mp3');
+            audioElement.setAttribute('src', '/static/sms-alert-1-daniel_simon.mp3');
             var participants = [];
             var pa = 0;
 
             {% for u in raffle.users.all %}
-                participants.push({'id': "{{u.pk}}", 'name': "{{u.first_name}}", 'number': pa + 1});
+                participants.push({'id': "{{u.pk}}", 'name': "{{u.first_name}}", 'number': pa + 2});
                 pa++;
             {% endfor %}
 
@@ -91,10 +91,12 @@
             shuffle(numbers);
 
 
+            var m1 = "<div class='col-xs-3 slot hidden'><div id='p_label'><b></b> <div id='1' class='randomizeMachine'></div></div></div>";
+            $("#machines").append(m1)
 
             // creamos un spinner por participante
             for (var key in participants) {
-                var m = "<div class='col-xs-3 slot'><div id='p_label'><b>" + participants[key].name + "</b> <div id='" + participants[key].number + "' class='randomizeMachine'></div></div></div>";
+                var m = "<div class='col-xs-3 slot'><div id='p_label'><b>" + participants[key].name + "</b> <div id='" + parseInt(participants[key].number) + "' class='randomizeMachine'></div></div></div>";
                 $("#machines").append(m)
             }
 
@@ -110,7 +112,7 @@
 
             // se ejecuta de forma recursiva cada que un sorteo termina
             function onComplete(active) {
-                //audioElement.play();
+                audioElement.play();
                 var id = parseInt(this.element[0].id);
                 var next_id = (id + 1);
                 var nnext_id = (id + 2);
@@ -119,15 +121,14 @@
                 var $nelem = $("#" + next_id);
                 var $nnelem = $("#" + nnext_id);
 
-                if ($nelem.length == 1 && round_count < pa - 1) {
+                if ($nelem.length == 1 && round_count < pa) {
                     // obtenemos el raffle "activo" (seleccionado) y buscamos el number que le dimos
-                    if(id == 1) {
-                        var active = this.active - 1;
-                    }else{
-                        var active = this.active;
+                    if(id > 1) {
+                        var mactive = this.active;
                     }
-                    var $obj = ($currem.children().find("[index=" + parseInt(active) + "]"));
-                    if (typeof $obj !== 'undefined') {
+
+                    var $obj = ($currem.children().find("[index=" + parseInt(mactive) + "]"));
+                    if (typeof $obj !== 'undefined' && id > 1) {
                         var val = $obj.attr('number');
                         var found = numbers.indexOf(parseInt(val));
                         if (found > -1) {
@@ -135,17 +136,12 @@
                             results.push(parseInt(val));
                         }
 
-                        console.log('active');
-                        console.log(this.active);
-
-                        console.log('found');
-                        console.log(found);
-
-                        console.log("numbers");
-                        console.log(numbers);
 
                         console.log("results");
                         console.log(results);
+                        console.log("numbers left");
+                        console.log(numbers);
+
                     }
 
                     // colocamos todos los numeros restantes en nuestra máquina
@@ -153,7 +149,9 @@
                         url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "' ><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
                         $("#" + next_id).append(url)
                     }
+                    console.log($nelem);
 
+                    // if is not las one
                     if ($nnelem.length == 1) {
                         var machine = $nelem.slotMachine({
                             active: 1,
@@ -178,7 +176,7 @@
 
 
                 for (var i = 1; i < numbers.length; i++) {
-                    url = "<div index='" + (i - 1) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
+                    url = "<div index='" + (i) + "' number='" + numbers[i] + "'><img src='https://dummyimage.com/70/ffffff/000000.gif&text=" + numbers[i] + "' /></div>";
                     $("#1").append(url)
                 }
 
@@ -190,10 +188,11 @@
 
 
                 machine1.shuffle(5, onComplete);
+
             });
 
             function success() {
-                alert('Guardado exitoso');
+                swal('Guardado exitoso');
             }
 
             $("#saveButton").click(function () {

@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
+from django.conf.urls.static import static
 
+from django_raffle import settings
 from raffle import views as raffle_views
 
 urlpatterns = [
@@ -28,4 +30,5 @@ urlpatterns = [
     url(r'^api/rifa/ganador/(?P<pk>\d+)/$', raffle_views.save_winner, name='save_winner'),
     url(r'^generate_excel/(?P<pk>\d+)/$', raffle_views.generate_excel, name='generate_excel'),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

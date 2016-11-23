@@ -438,10 +438,38 @@ footer{
 	transform: rotate(90deg);
 	transform-origin: left top 0;
     float: left;
-    padding-top: 120px;
+    padding-top: 160px;
+    width: 600px;
+    z-index: 999;
+    position: absolute;
 }
 
 .winner-label {
     font-family: 'Archivo Black', sans-serif;
     padding-bottom: 30px;
 }
+
+.banner {
+    width: 250px;
+    height: 250px;
+    position: absolute;
+}
+
+ .banner-1 {
+     left: 0px;
+     bottom: 255px
+ }
+
+ .banner-2 {
+     left: 0px;
+     bottom: 0px
+ }
+ .banner-3 {
+    right: 0px;
+    bottom: 255px
+ }
+
+ .banner-4 {
+     right: 0px;
+     bottom: 0px
+ }
