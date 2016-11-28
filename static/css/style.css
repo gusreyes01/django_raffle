@@ -453,6 +453,7 @@ footer{
     width: 250px;
     height: 250px;
     position: absolute;
+    z-index: -1;
 }
 
  .banner-1 {
