@@ -450,8 +450,8 @@ footer{
 }
 
 .banner {
-    width: 250px;
-    height: 250px;
+    width: 130px;
+    height: 100px;
     position: absolute;
     z-index: -1;
 }
@@ -473,4 +473,8 @@ footer{
  .banner-4 {
      right: 0px;
      bottom: 0px
+ }
+
+ .raffle-footer{
+     bottom: 0px;
  }
