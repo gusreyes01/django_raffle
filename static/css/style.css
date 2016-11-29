@@ -476,3 +476,9 @@ footer{
  .raffle-footer{
      bottom: 0px;
  }
+
+ .carousel-inner > .item > img, .carousel-inner > .item > a > img {
+     display: block;
+     height: 200px;
+     line-height: 1;
+ }
